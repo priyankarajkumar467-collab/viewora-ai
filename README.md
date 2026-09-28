@@ -18,6 +18,8 @@ Designed for production analytics, hackathon showcases, university research, and
 * **Audience Insights & Visual Analytics**: Deep-dive operational KPIs including Peak Viewing Windows (8 PM – 11 PM), Most Engaged Genres (Thriller), Segment Completion Benchmarks, and Weekend Engagement dynamics.
 * **What-If Audience Simulator**: Interactive scenario testing workbench with real-time sliders allowing platform operators to simulate behavioral transformations and visualize cohort transition boundaries.
 * **AI-Powered Insight Panels**: Dynamic, data-grounded strategic observations derived directly from 1,200+ simulated viewer logs.
+* **One-Click Dataset CSV Export**: Download complete 1,200-viewer behavioral telemetry reports directly as structured CSV files using client-side `Blob` streaming.
+* **Custom CSV Dataset Import & Validation**: Upload custom audience CSV files via the Settings modal with schema validation checking required behavioral metrics (`watch_time_hours`, `avg_session_mins`, `session_count`, `weekend_ratio`, `completion_rate`), instantly updating all KPI cards and charts in real time.
 * **Seamless Demo Mode & Resilient Architecture**: Automatically operates client-side using JavaScript mock ML pipelines if the Python backend is offline, guaranteeing 100% uptime during live presentations.
 * **High-Performance FastAPI Backend**: RESTful Python service implementing `/health`, `/analyze`, and `/recommend` endpoints.
 

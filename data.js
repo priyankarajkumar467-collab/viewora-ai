@@ -411,6 +411,8 @@
     contentCatalog: contentCatalog,
     classifier: MLClassifier,
     genres: GENRES,
+    computeAggregates: computeAggregates,
+    generateViewers: generateViewers,
     version: '1.0.0',
     buildDate: '2026-09-28',
   };

@@ -43,6 +43,32 @@
     demoModeToggle: document.getElementById('demoModeToggle'),
     toastContainer: document.getElementById('toastContainer'),
     headerSearchInput: document.getElementById('headerSearchInput'),
+    downloadReportBtn: document.getElementById('downloadReportBtn'),
+    csvFileInput: document.getElementById('csvFileInput'),
+    triggerCsvUploadBtn: document.getElementById('triggerCsvUploadBtn'),
+    resetDefaultDataBtn: document.getElementById('resetDefaultDataBtn'),
+    csvValidationStatus: document.getElementById('csvValidationStatus'),
+    modalAudienceCount: document.getElementById('modalAudienceCount'),
+    sidebarViewerCount: document.getElementById('sidebarViewerCount'),
+    kpiTotalViewers: document.getElementById('kpiTotalViewers'),
+    kpiAvgWatchTime: document.getElementById('kpiAvgWatchTime'),
+    kpiAvgCompletion: document.getElementById('kpiAvgCompletion'),
+    donutCasualCount: document.getElementById('donutCasualCount'),
+    donutCasualPct: document.getElementById('donutCasualPct'),
+    donutBingeCount: document.getElementById('donutBingeCount'),
+    donutBingePct: document.getElementById('donutBingePct'),
+    segCasualPct: document.getElementById('segCasualPct'),
+    segCasualCount: document.getElementById('segCasualCount'),
+    segCasualWatch: document.getElementById('segCasualWatch'),
+    segCasualSession: document.getElementById('segCasualSession'),
+    segCasualComp: document.getElementById('segCasualComp'),
+    segCasualWeekend: document.getElementById('segCasualWeekend'),
+    segBingePct: document.getElementById('segBingePct'),
+    segBingeCount: document.getElementById('segBingeCount'),
+    segBingeWatch: document.getElementById('segBingeWatch'),
+    segBingeSession: document.getElementById('segBingeSession'),
+    segBingeComp: document.getElementById('segBingeComp'),
+    segBingeWeekend: document.getElementById('segBingeWeekend'),
   };
 
   /**
@@ -931,9 +957,373 @@
   }
 
   /**
+   * Export demo dataset as a CSV file using Blob
+   */
+  function exportDatasetCSV() {
+    const data = window.WatchWiseData;
+    if (!data || !data.viewers || !data.viewers.length) {
+      showToast('No viewer dataset available to export');
+      return;
+    }
+
+    const headers = [
+      'Viewer ID',
+      'Watch Time (Hours)',
+      'Avg Session (Minutes)',
+      'Session Count',
+      'Weekend Ratio (%)',
+      'Completion Rate (%)',
+      'Top Genre',
+      'Audience Segment',
+    ];
+
+    const rows = data.viewers.map((v) => [
+      v.viewer_id,
+      v.watch_time_hours,
+      v.avg_session_mins,
+      v.session_count,
+      v.weekend_ratio,
+      v.completion_rate,
+      `"${v.top_genre}"`,
+      `"${v.segment}"`,
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((r) => r.join(',')),
+    ].join('\r\n');
+
+    // Create a CSV Blob object
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const timestamp = new Date().toISOString().slice(0, 10);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `WatchWise_Audience_Report_${timestamp}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showToast(`Report downloaded: ${data.viewers.length.toLocaleString()} viewer records exported as CSV`);
+  }
+
+  /**
+   * Helper to parse a single line of CSV text respecting quotes
+   */
+  function parseCSVLine(line) {
+    const values = [];
+    let cur = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        values.push(cur.trim());
+        cur = '';
+      } else {
+        cur += char;
+      }
+    }
+    values.push(cur.trim());
+    return values;
+  }
+
+  /**
+   * Validates custom CSV columns and parses viewer records
+   */
+  function validateAndParseCSV(csvText) {
+    const lines = csvText.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+    if (lines.length < 2) {
+      return { valid: false, error: 'CSV file is empty or missing data rows.' };
+    }
+
+    const headers = parseCSVLine(lines[0]);
+    if (!headers || headers.length === 0) {
+      return { valid: false, error: 'Could not parse CSV header row.' };
+    }
+
+    // Helper to normalize strings for comparison
+    const norm = (str) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const headerMap = {};
+    headers.forEach((h, idx) => {
+      headerMap[norm(h)] = idx;
+    });
+
+    function findColIndex(candidates) {
+      for (const c of candidates) {
+        const n = norm(c);
+        if (headerMap[n] !== undefined) return headerMap[n];
+        for (const h in headerMap) {
+          if (h.includes(n)) return headerMap[h];
+        }
+      }
+      return -1;
+    }
+
+    const idxWatchTime = findColIndex(['watch_time_hours', 'watchtimehours', 'watchtime']);
+    const idxAvgSession = findColIndex(['avg_session_mins', 'avgsessionminutes', 'avgsession', 'sessionduration']);
+    const idxSessionCount = findColIndex(['session_count', 'sessioncount', 'sessions']);
+    const idxWeekendRatio = findColIndex(['weekend_ratio', 'weekendratio', 'weekendpercent', 'weekend']);
+    const idxCompletionRate = findColIndex(['completion_rate', 'completionrate', 'completionpercent', 'completion']);
+    const idxViewerId = findColIndex(['viewer_id', 'viewerid', 'id']);
+    const idxTopGenre = findColIndex(['top_genre', 'topgenre', 'genre']);
+    const idxSegment = findColIndex(['audiencesegment', 'segment']);
+
+    // Check presence of the 5 expected viewer behavioral metrics
+    const missing = [];
+    if (idxWatchTime === -1) missing.push('watch_time_hours');
+    if (idxAvgSession === -1) missing.push('avg_session_mins');
+    if (idxSessionCount === -1) missing.push('session_count');
+    if (idxWeekendRatio === -1) missing.push('weekend_ratio');
+    if (idxCompletionRate === -1) missing.push('completion_rate');
+
+    if (missing.length > 0) {
+      return {
+        valid: false,
+        error: `Missing required behavioral metric column(s): ${missing.join(', ')}. Expected: watch_time_hours, avg_session_mins, session_count, weekend_ratio, completion_rate.`,
+      };
+    }
+
+    const parsedViewers = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = parseCSVLine(lines[i]);
+      if (cols.length < 5) continue;
+
+      const watchTime = parseFloat(cols[idxWatchTime]);
+      const avgSession = parseFloat(cols[idxAvgSession]);
+      const sessionCount = parseFloat(cols[idxSessionCount]);
+      const weekendRatio = parseFloat(cols[idxWeekendRatio]);
+      const completionRate = parseFloat(cols[idxCompletionRate]);
+
+      if (isNaN(watchTime) || isNaN(avgSession) || isNaN(sessionCount) || isNaN(weekendRatio) || isNaN(completionRate)) {
+        return {
+          valid: false,
+          error: `Row ${i} contains non-numeric data for behavioral metrics.`,
+        };
+      }
+
+      const viewerId = idxViewerId !== -1 && cols[idxViewerId] ? cols[idxViewerId].replace(/['"]/g, '') : `VW-${1000 + i}`;
+      const rawGenre = idxTopGenre !== -1 && cols[idxTopGenre] ? cols[idxTopGenre].replace(/['"]/g, '') : 'Thriller';
+      const topGenre = window.WatchWiseData.genres.includes(rawGenre) ? rawGenre : 'Drama';
+
+      let rawSegment = idxSegment !== -1 && cols[idxSegment] ? cols[idxSegment].replace(/['"]/g, '') : null;
+      let segment = rawSegment;
+      if (!segment || (segment !== 'Binge Enthusiasts' && segment !== 'Casual & Regular Viewers')) {
+        const pred = window.WatchWiseData.classifier.predict({
+          watch_time_hours: watchTime,
+          avg_session_mins: avgSession,
+          session_count: sessionCount,
+          weekend_ratio: weekendRatio,
+          completion_rate: completionRate,
+          top_genre: topGenre,
+        });
+        segment = pred.segment;
+      }
+
+      parsedViewers.push({
+        viewer_id: viewerId,
+        watch_time_hours: watchTime,
+        avg_session_mins: avgSession,
+        session_count: sessionCount,
+        weekend_ratio: weekendRatio,
+        completion_rate: completionRate,
+        top_genre: topGenre,
+        segment: segment,
+      });
+    }
+
+    if (parsedViewers.length === 0) {
+      return { valid: false, error: 'CSV file contains no valid data rows.' };
+    }
+
+    return { valid: true, viewers: parsedViewers };
+  }
+
+  /**
+   * Refreshes all KPI cards, counters, and Chart.js instances across the dashboard
+   */
+  function refreshDashboardMetrics() {
+    const data = window.WatchWiseData;
+    if (!data || !data.computeAggregates) return;
+
+    const newAggregates = data.computeAggregates(data.viewers);
+    data.aggregates = newAggregates;
+
+    // Overview KPI Numbers
+    if (elements.kpiTotalViewers) elements.kpiTotalViewers.textContent = newAggregates.totalViewers.toLocaleString();
+    if (elements.kpiAvgWatchTime) elements.kpiAvgWatchTime.textContent = newAggregates.avgWatchTime + ' hrs';
+    if (elements.kpiAvgCompletion) elements.kpiAvgCompletion.textContent = newAggregates.avgCompletion + '%';
+
+    // Overview Donut Legend
+    if (elements.donutCasualCount) elements.donutCasualCount.textContent = newAggregates.casualCount.toLocaleString() + ' viewers';
+    if (elements.donutCasualPct) elements.donutCasualPct.textContent = newAggregates.casualPercent + '%';
+    if (elements.donutBingeCount) elements.donutBingeCount.textContent = newAggregates.bingeCount.toLocaleString() + ' viewers';
+    if (elements.donutBingePct) elements.donutBingePct.textContent = newAggregates.bingePercent + '%';
+
+    // Sidebar & Settings Modal Counters
+    if (elements.sidebarViewerCount) elements.sidebarViewerCount.textContent = newAggregates.totalViewers.toLocaleString() + ' Viewers';
+    if (elements.modalAudienceCount) elements.modalAudienceCount.textContent = newAggregates.totalViewers.toLocaleString() + ' Viewers';
+
+    // Audience Segments Profile Cards
+    if (elements.segCasualPct) elements.segCasualPct.textContent = newAggregates.casualPercent + '%';
+    if (elements.segCasualCount) elements.segCasualCount.textContent = newAggregates.casualCount.toLocaleString() + ' Viewers';
+    if (elements.segCasualWatch) elements.segCasualWatch.textContent = newAggregates.casualAvg.watchTime + ' hrs';
+    if (elements.segCasualSession) elements.segCasualSession.textContent = newAggregates.casualAvg.sessionMins + ' mins';
+    if (elements.segCasualComp) elements.segCasualComp.textContent = newAggregates.casualAvg.completion + '%';
+    if (elements.segCasualWeekend) elements.segCasualWeekend.textContent = newAggregates.casualAvg.weekendRatio + '%';
+
+    if (elements.segBingePct) elements.segBingePct.textContent = newAggregates.bingePercent + '%';
+    if (elements.segBingeCount) elements.segBingeCount.textContent = newAggregates.bingeCount.toLocaleString() + ' Viewers';
+    if (elements.segBingeWatch) elements.segBingeWatch.textContent = newAggregates.bingeAvg.watchTime + ' hrs';
+    if (elements.segBingeSession) elements.segBingeSession.textContent = newAggregates.bingeAvg.sessionMins + ' mins';
+    if (elements.segBingeComp) elements.segBingeComp.textContent = newAggregates.bingeAvg.completion + '%';
+    if (elements.segBingeWeekend) elements.segBingeWeekend.textContent = newAggregates.bingeAvg.weekendRatio + '%';
+
+    // Update Donut Chart
+    if (state.charts.donut) {
+      state.charts.donut.data.datasets[0].data = [newAggregates.casualCount, newAggregates.bingeCount];
+      state.charts.donut.update();
+    }
+
+    // Update Genre Bar Chart
+    if (state.charts.genre) {
+      state.charts.genre.data.datasets[0].data = data.genres.map((g) => newAggregates.genreCounts[g] || 0);
+      state.charts.genre.update();
+    }
+
+    // Update Segment Radar Chart
+    if (state.charts.radar) {
+      state.charts.radar.data.datasets[0].data = [
+        newAggregates.bingeAvg.watchTime,
+        newAggregates.bingeAvg.sessionMins,
+        newAggregates.bingeAvg.completion,
+        newAggregates.bingeAvg.weekendRatio,
+        42,
+      ];
+      state.charts.radar.data.datasets[1].data = [
+        newAggregates.casualAvg.watchTime,
+        newAggregates.casualAvg.sessionMins,
+        newAggregates.casualAvg.completion,
+        newAggregates.casualAvg.weekendRatio,
+        24,
+      ];
+      state.charts.radar.update();
+    }
+  }
+
+  /**
+   * Handles custom CSV file upload and validation
+   */
+  function handleCsvUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.csv') && file.type && !file.type.includes('csv') && !file.type.includes('text')) {
+      if (elements.csvValidationStatus) {
+        elements.csvValidationStatus.className = 'csv-validation-box error';
+        elements.csvValidationStatus.textContent = 'Invalid file format: Please select a valid .csv file.';
+      }
+      showToast('Upload rejected: File must be in CSV format');
+      elements.csvFileInput.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      try {
+        const text = event.target.result;
+        const result = validateAndParseCSV(text);
+
+        if (!result.valid) {
+          if (elements.csvValidationStatus) {
+            elements.csvValidationStatus.className = 'csv-validation-box error';
+            elements.csvValidationStatus.innerHTML = `⚠️ <strong>Validation Failed:</strong> ${result.error}`;
+          }
+          showToast(`CSV Validation Error: ${result.error}`);
+          return;
+        }
+
+        // Successfully validated: Replace active dataset
+        window.WatchWiseData.viewers = result.viewers;
+        refreshDashboardMetrics();
+
+        if (elements.csvValidationStatus) {
+          elements.csvValidationStatus.className = 'csv-validation-box success';
+          elements.csvValidationStatus.innerHTML = `✓ <strong>Validated:</strong> Successfully imported ${result.viewers.length.toLocaleString()} custom viewer records from <em>${file.name}</em>.`;
+        }
+
+        showToast(`Custom dataset loaded: ${result.viewers.length.toLocaleString()} viewers active`);
+      } catch (err) {
+        console.error('CSV parse error:', err);
+        if (elements.csvValidationStatus) {
+          elements.csvValidationStatus.className = 'csv-validation-box error';
+          elements.csvValidationStatus.textContent = 'Failed to parse CSV file: ' + err.message;
+        }
+        showToast('Error parsing custom CSV file');
+      } finally {
+        elements.csvFileInput.value = '';
+      }
+    };
+
+    reader.onerror = function () {
+      if (elements.csvValidationStatus) {
+        elements.csvValidationStatus.className = 'csv-validation-box error';
+        elements.csvValidationStatus.textContent = 'Failed to read uploaded file.';
+      }
+      showToast('Error reading uploaded CSV file');
+      elements.csvFileInput.value = '';
+    };
+
+    reader.readAsText(file);
+  }
+
+  /**
+   * Resets active dataset back to the default 1,200 simulated viewers
+   */
+  function handleResetDefaultData() {
+    if (typeof window.WatchWiseData.generateViewers === 'function') {
+      window.WatchWiseData.viewers = window.WatchWiseData.generateViewers(1200);
+      refreshDashboardMetrics();
+
+      if (elements.csvValidationStatus) {
+        elements.csvValidationStatus.className = 'csv-validation-box';
+        elements.csvValidationStatus.innerHTML = `Expected columns: <code style="color: var(--accent-cyan);">watch_time_hours, avg_session_mins, session_count, weekend_ratio, completion_rate</code>`;
+      }
+
+      showToast('Dataset reset to default 1,200 simulated viewers');
+    }
+  }
+
+  /**
    * Setup Event Listeners
    */
   function setupEventListeners() {
+    // Download Report CSV button
+    if (elements.downloadReportBtn) {
+      elements.downloadReportBtn.addEventListener('click', exportDatasetCSV);
+    }
+
+    // Custom CSV file input and trigger upload buttons
+    if (elements.triggerCsvUploadBtn && elements.csvFileInput) {
+      elements.triggerCsvUploadBtn.addEventListener('click', () => {
+        elements.csvFileInput.click();
+      });
+    }
+
+    if (elements.csvFileInput) {
+      elements.csvFileInput.addEventListener('change', handleCsvUpload);
+    }
+
+    if (elements.resetDefaultDataBtn) {
+      elements.resetDefaultDataBtn.addEventListener('click', handleResetDefaultData);
+    }
     // Navigation item clicks
     elements.navItems.forEach((btn) => {
       btn.addEventListener('click', () => {

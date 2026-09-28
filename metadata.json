@@ -2,5 +2,7 @@
   "name": "WatchWise AI",
   "description": "OTT Audience Segmentation & Personalization Platform - AI-powered viewer behavior analytics, audience segmentation, personalized recommendations, and what-if simulation.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
