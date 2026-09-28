@@ -69,22 +69,73 @@
     segBingeSession: document.getElementById('segBingeSession'),
     segBingeComp: document.getElementById('segBingeComp'),
     segBingeWeekend: document.getElementById('segBingeWeekend'),
+    predictiveAlertCard: document.getElementById('predictiveAlertCard'),
+    predictivePulseIcon: document.getElementById('predictivePulseIcon'),
+    predictiveStatusBadge: document.getElementById('predictiveStatusBadge'),
+    predictiveStatusText: document.getElementById('predictiveStatusText'),
+    runPredictiveAuditBtn: document.getElementById('runPredictiveAuditBtn'),
+    alertProjectedRetention: document.getElementById('alertProjectedRetention'),
+    alertRetentionDelta: document.getElementById('alertRetentionDelta'),
+    alertChurnRiskLevel: document.getElementById('alertChurnRiskLevel'),
+    alertRiskSeverity: document.getElementById('alertRiskSeverity'),
+    alertAtRiskCount: document.getElementById('alertAtRiskCount'),
+    alertAtRiskPct: document.getElementById('alertAtRiskPct'),
+    presetRetentionStable: document.getElementById('presetRetentionStable'),
+    presetRetentionFatigue: document.getElementById('presetRetentionFatigue'),
+    presetRetentionSpike: document.getElementById('presetRetentionSpike'),
+    alertCompletionDrop: document.getElementById('alertCompletionDrop'),
+    alertCompletionDropVal: document.getElementById('alertCompletionDropVal'),
+    alertSessionFatigue: document.getElementById('alertSessionFatigue'),
+    alertSessionFatigueVal: document.getElementById('alertSessionFatigueVal'),
+    alertWeekendDecay: document.getElementById('alertWeekendDecay'),
+    alertWeekendDecayVal: document.getElementById('alertWeekendDecayVal'),
+    alertCohortSelect: document.getElementById('alertCohortSelect'),
+    predictiveBannerBox: document.getElementById('predictiveBannerBox'),
+    predictiveBannerIcon: document.getElementById('predictiveBannerIcon'),
+    predictiveBannerTitle: document.getElementById('predictiveBannerTitle'),
+    predictiveBannerDesc: document.getElementById('predictiveBannerDesc'),
+    predictiveMitigationBox: document.getElementById('predictiveMitigationBox'),
+    predictiveMitigationText: document.getElementById('predictiveMitigationText'),
   };
 
   /**
-   * Toast notification helper
+   * Toast notification helper with alert/warning/success styling support
    */
-  function showToast(message, duration = 3000) {
+  function showToast(message, type = 'info', duration = 3500) {
     if (!elements.toastContainer) return;
     const toast = document.createElement('div');
-    toast.className = 'toast';
+    toast.className = `toast ${type}`;
+
+    let iconSvg = '';
+    if (type === 'warning' || type === 'alert' || type === 'critical') {
+      const strokeColor = type === 'warning' ? '#f59e0b' : '#f43f5e';
+      iconSvg = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      `;
+    } else if (type === 'success') {
+      iconSvg = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      `;
+    } else {
+      iconSvg = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      `;
+    }
+
     toast.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="16" x2="12" y2="12"></line>
-        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-      </svg>
-      <span>${message}</span>
+      ${iconSvg}
+      <span style="flex:1;">${message}</span>
     `;
     elements.toastContainer.appendChild(toast);
     setTimeout(() => {
@@ -520,6 +571,214 @@
         },
       });
     }
+  }
+
+  /**
+   * Predictive Alert System: Retention Risk Simulation Engine
+   * Evaluates cohort behavioral decay metrics and triggers UI toast notifications
+   * when the model detects a potential drop in retention.
+   */
+  let alertDebounceTimer = null;
+
+  function evaluatePredictiveRetention(userTriggered = false) {
+    if (!elements.alertCompletionDrop || !elements.alertProjectedRetention) return;
+
+    const completionDrop = parseFloat(elements.alertCompletionDrop.value) || 0;
+    const sessionFatigue = parseFloat(elements.alertSessionFatigue.value) || 0;
+    const weekendDecay = parseFloat(elements.alertWeekendDecay.value) || 0;
+    const cohortChoice = elements.alertCohortSelect ? elements.alertCohortSelect.value : 'all';
+
+    const data = window.WatchWiseData;
+    const totalViewers = data && data.viewers ? data.viewers.length : 1200;
+    const casualCount = data && data.aggregates ? data.aggregates.casualCount : 906;
+    const bingeCount = data && data.aggregates ? data.aggregates.bingeCount : 294;
+
+    let cohortSize = totalViewers;
+    let baselineRetention = 91.8;
+    let cohortLabel = 'All Audiences';
+
+    if (cohortChoice === 'casual') {
+      cohortSize = casualCount;
+      baselineRetention = 88.4;
+      cohortLabel = 'Casual & Regular Viewers';
+    } else if (cohortChoice === 'binge') {
+      cohortSize = bingeCount;
+      baselineRetention = 96.2;
+      cohortLabel = 'Binge Enthusiasts';
+    }
+
+    // Mathematical decay model:
+    // Completion drop has highest sensitivity (0.52), followed by continuous session fatigue (0.30)
+    // and weekend habit erosion (0.22).
+    const drag = (completionDrop / 100) * 0.52 + (sessionFatigue / 60) * 0.30 + (weekendDecay / 100) * 0.22;
+    const totalDrop = +(drag * 100).toFixed(1);
+    const projectedRetention = Math.max(35.0, Math.min(99.0, +(baselineRetention - totalDrop).toFixed(1)));
+    const retentionDelta = +(baselineRetention - projectedRetention).toFixed(1);
+
+    const atRiskCount = Math.round((retentionDelta / 100) * cohortSize);
+    const atRiskPct = ((atRiskCount / cohortSize) * 100).toFixed(1);
+
+    // Update UI Metric Readouts
+    elements.alertProjectedRetention.textContent = `${projectedRetention}%`;
+    elements.alertRetentionDelta.textContent = `Baseline: ~${baselineRetention}% (-${retentionDelta}%)`;
+    elements.alertAtRiskCount.textContent = `${atRiskCount.toLocaleString()} Viewers`;
+    elements.alertAtRiskPct.textContent = `~${atRiskPct}% of ${cohortLabel}`;
+
+    const isCritical = projectedRetention < 74.0 || retentionDelta >= 20.0;
+    const isWarning = !isCritical && (projectedRetention < 80.0 || retentionDelta >= 8.5);
+    const isAlertState = isCritical || isWarning;
+
+    // Update Badge & Status
+    if (elements.predictiveAlertCard) {
+      if (isAlertState) {
+        elements.predictiveAlertCard.classList.add('alert-active');
+      } else {
+        elements.predictiveAlertCard.classList.remove('alert-active');
+      }
+    }
+
+    if (elements.predictiveStatusBadge && elements.predictiveStatusText) {
+      if (isCritical) {
+        elements.predictiveStatusBadge.className = 'predictive-alert-badge critical';
+        elements.predictiveStatusText.textContent = 'CRITICAL RETENTION DROP';
+        elements.alertProjectedRetention.style.color = '#f87171';
+        elements.alertChurnRiskLevel.textContent = 'Critical';
+        elements.alertChurnRiskLevel.style.color = '#f87171';
+        elements.alertRiskSeverity.textContent = 'Severe churn trajectory';
+      } else if (isWarning) {
+        elements.predictiveStatusBadge.className = 'predictive-alert-badge warning';
+        elements.predictiveStatusText.textContent = 'RETENTION ALERT';
+        elements.alertProjectedRetention.style.color = '#fbbf24';
+        elements.alertChurnRiskLevel.textContent = 'Elevated';
+        elements.alertChurnRiskLevel.style.color = '#fbbf24';
+        elements.alertRiskSeverity.textContent = 'Decay threshold breached';
+      } else {
+        elements.predictiveStatusBadge.className = 'predictive-alert-badge nominal';
+        elements.predictiveStatusText.textContent = 'RETENTION NOMINAL';
+        elements.alertProjectedRetention.style.color = '#34d399';
+        elements.alertChurnRiskLevel.textContent = 'Low';
+        elements.alertChurnRiskLevel.style.color = '#34d399';
+        elements.alertRiskSeverity.textContent = 'Standard seasonal flux';
+      }
+    }
+
+    // Update Banner Content
+    if (elements.predictiveBannerBox) {
+      if (isAlertState) {
+        elements.predictiveBannerBox.classList.add('alert-active');
+      } else {
+        elements.predictiveBannerBox.classList.remove('alert-active');
+      }
+    }
+
+    if (
+      elements.predictiveBannerTitle &&
+      elements.predictiveBannerDesc &&
+      elements.predictiveMitigationText &&
+      elements.predictiveBannerIcon
+    ) {
+      if (isCritical) {
+        elements.predictiveBannerTitle.textContent = `Critical Retention Drop Detected (${cohortLabel})`;
+        elements.predictiveBannerDesc.textContent = `Simulation model projects an acute ${retentionDelta}% drop in cohort retention (${projectedRetention}% projected). Significant audience volume (${atRiskCount.toLocaleString()} accounts) is trending toward churn and platform dormancy.`;
+        elements.predictiveMitigationText.textContent = `Deploy immediate re-engagement sequence: Dispatch targeted episode finale previews, personalized watchlist reminders, and priority streaming recommendations to the ${atRiskCount.toLocaleString()} at-risk accounts within 24 hours.`;
+        elements.predictiveBannerIcon.innerHTML = `
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        `;
+        elements.predictiveBannerIcon.setAttribute('stroke', '#f43f5e');
+      } else if (isWarning) {
+        elements.predictiveBannerTitle.textContent = `Elevated Churn Risk Alert (${cohortLabel})`;
+        elements.predictiveBannerDesc.textContent = `Projected retention dipped below the 80% threshold to ${projectedRetention}% (-${retentionDelta}% drop). Viewing cadence slowdown and session fatigue indicate growing churn propensity.`;
+        elements.predictiveMitigationText.textContent = `Automate personalized 48-hour push notifications featuring 45-minute episodic dramas and high-match thrillers to reverse session abandonment before week's end.`;
+        elements.predictiveBannerIcon.innerHTML = `
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        `;
+        elements.predictiveBannerIcon.setAttribute('stroke', '#f59e0b');
+      } else {
+        elements.predictiveBannerTitle.textContent = `Retention Model Stable (${cohortLabel})`;
+        elements.predictiveBannerDesc.textContent = `Simulation parameters indicate healthy cohort stability. Viewing cadence and completion rates exceed the 80% platform retention threshold.`;
+        elements.predictiveMitigationText.textContent = `Continue standard episodic release schedule. Viewer churn risk is well within nominal parameters.`;
+        elements.predictiveBannerIcon.innerHTML = `<polyline points="20 6 9 17 4 12"></polyline>`;
+        elements.predictiveBannerIcon.setAttribute('stroke', '#10b981');
+      }
+    }
+
+    // Trigger Toast Notification
+    if (isAlertState) {
+      const alertType = isCritical ? 'critical' : 'warning';
+      const toastMsg = `⚠️ Predictive Alert: Potential ${retentionDelta}% drop in cohort retention detected! ${atRiskCount.toLocaleString()} ${cohortLabel} at churn risk.`;
+      showToast(toastMsg, alertType, 5000);
+    } else if (userTriggered) {
+      showToast(`✓ Predictive Retention Audit: Cohort retention is nominal at ${projectedRetention}% for ${cohortLabel}.`, 'success', 3500);
+    }
+  }
+
+  function initPredictiveAlertSystem() {
+    if (!elements.alertCompletionDrop) return;
+
+    const updateSliderBadges = () => {
+      if (elements.alertCompletionDropVal) elements.alertCompletionDropVal.textContent = `-${elements.alertCompletionDrop.value}%`;
+      if (elements.alertSessionFatigueVal) elements.alertSessionFatigueVal.textContent = `-${elements.alertSessionFatigue.value} mins`;
+      if (elements.alertWeekendDecayVal) elements.alertWeekendDecayVal.textContent = `-${elements.alertWeekendDecay.value}%`;
+    };
+
+    const handleSliderInput = () => {
+      updateSliderBadges();
+      clearTimeout(alertDebounceTimer);
+      alertDebounceTimer = setTimeout(() => {
+        evaluatePredictiveRetention(false);
+      }, 350);
+    };
+
+    elements.alertCompletionDrop.addEventListener('input', handleSliderInput);
+    elements.alertSessionFatigue.addEventListener('input', handleSliderInput);
+    elements.alertWeekendDecay.addEventListener('input', handleSliderInput);
+
+    if (elements.alertCohortSelect) {
+      elements.alertCohortSelect.addEventListener('change', () => evaluatePredictiveRetention(true));
+    }
+
+    if (elements.runPredictiveAuditBtn) {
+      elements.runPredictiveAuditBtn.addEventListener('click', () => evaluatePredictiveRetention(true));
+    }
+
+    // Preset Scenario Handlers
+    if (elements.presetRetentionStable) {
+      elements.presetRetentionStable.addEventListener('click', () => {
+        elements.alertCompletionDrop.value = 0;
+        elements.alertSessionFatigue.value = 0;
+        elements.alertWeekendDecay.value = 0;
+        updateSliderBadges();
+        evaluatePredictiveRetention(true);
+      });
+    }
+
+    if (elements.presetRetentionFatigue) {
+      elements.presetRetentionFatigue.addEventListener('click', () => {
+        elements.alertCompletionDrop.value = 20;
+        elements.alertSessionFatigue.value = 24;
+        elements.alertWeekendDecay.value = 16;
+        updateSliderBadges();
+        evaluatePredictiveRetention(true);
+      });
+    }
+
+    if (elements.presetRetentionSpike) {
+      elements.presetRetentionSpike.addEventListener('click', () => {
+        elements.alertCompletionDrop.value = 36;
+        elements.alertSessionFatigue.value = 44;
+        elements.alertWeekendDecay.value = 30;
+        updateSliderBadges();
+        evaluatePredictiveRetention(true);
+      });
+    }
+
+    // Initial evaluation without toast
+    updateSliderBadges();
+    evaluatePredictiveRetention(false);
   }
 
   /**
@@ -1216,6 +1475,9 @@
       ];
       state.charts.radar.update();
     }
+
+    // Refresh predictive retention metrics with new dataset sizes
+    evaluatePredictiveRetention(false);
   }
 
   /**
@@ -1412,6 +1674,9 @@
     initOverviewCharts();
     initSegmentCharts();
     initInsightsCharts();
+
+    // Initialize Predictive Retention Alert System
+    initPredictiveAlertSystem();
 
     // Check backend status silently
     checkBackendHealth();

@@ -16,6 +16,7 @@ Designed for production analytics, hackathon showcases, university research, and
 * **Viewer Behavior Analysis**: Interactive inference engine that evaluates multi-dimensional streaming metrics (Watch Time, Average Session Length, Session Count, Weekend Ratio, Completion Rate, Top Genre) to output classification, confidence rating, and behavioral reasoning.
 * **Personalized Recommendations**: Context-aware catalog recommendation engine matching viewers with tailored movie and series titles based on content genres and predicted consumption propensity.
 * **Audience Insights & Visual Analytics**: Deep-dive operational KPIs including Peak Viewing Windows (8 PM – 11 PM), Most Engaged Genres (Thriller), Segment Completion Benchmarks, and Weekend Engagement dynamics.
+* **Predictive Retention Alert System**: Real-time behavioral decay simulation engine within Audience Insights that calculates projected cohort retention, detects early churn risk thresholds, displays AI mitigation actions, and triggers rich UI toast notifications when retention drops.
 * **What-If Audience Simulator**: Interactive scenario testing workbench with real-time sliders allowing platform operators to simulate behavioral transformations and visualize cohort transition boundaries.
 * **AI-Powered Insight Panels**: Dynamic, data-grounded strategic observations derived directly from 1,200+ simulated viewer logs.
 * **One-Click Dataset CSV Export**: Download complete 1,200-viewer behavioral telemetry reports directly as structured CSV files using client-side `Blob` streaming.

@@ -813,6 +813,135 @@
             </div>
           </div>
 
+          <!-- ==================================================================
+               PREDICTIVE ALERT SYSTEM: RETENTION RISK MONITOR
+               ================================================================== -->
+          <div class="predictive-alert-card" id="predictiveAlertCard">
+            <div class="predictive-alert-header">
+              <div class="predictive-alert-title-box">
+                <div class="predictive-pulse-icon" id="predictivePulseIcon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: -0.01em;">Predictive Retention Alert System</h3>
+                  <p style="font-size: 0.78rem; color: var(--text-muted);">Real-time behavioral decay simulation & proactive churn trigger</p>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <span class="predictive-alert-badge nominal" id="predictiveStatusBadge">
+                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span>
+                  <span id="predictiveStatusText">Retention Nominal</span>
+                </span>
+                <button type="button" class="btn-primary" id="runPredictiveAuditBtn" style="height: 36px; padding: 0 1rem; font-size: 0.82rem; width: auto;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  <span>Evaluate Risk</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Key Projected Metrics Strip -->
+            <div class="alert-metrics-strip">
+              <div class="alert-metric-item">
+                <span class="alert-metric-label">Projected Retention</span>
+                <span class="alert-metric-val tabular-nums" id="alertProjectedRetention" style="color: #34d399;">91.4%</span>
+                <span class="alert-metric-sub" id="alertRetentionDelta">Baseline: ~92.0%</span>
+              </div>
+              <div class="alert-metric-item">
+                <span class="alert-metric-label">Cohort Churn Risk</span>
+                <span class="alert-metric-val" id="alertChurnRiskLevel" style="color: #34d399;">Low</span>
+                <span class="alert-metric-sub" id="alertRiskSeverity">Standard seasonal flux</span>
+              </div>
+              <div class="alert-metric-item">
+                <span class="alert-metric-label">At-Risk Accounts</span>
+                <span class="alert-metric-val tabular-nums" id="alertAtRiskCount" style="color: #fff;">48 Viewers</span>
+                <span class="alert-metric-sub" id="alertAtRiskPct">~4.0% of cohort</span>
+              </div>
+              <div class="alert-metric-item">
+                <span class="alert-metric-label">Retention Alert Trigger</span>
+                <span class="alert-metric-val tabular-nums" style="color: var(--accent-cyan);">&lt; 80.0%</span>
+                <span class="alert-metric-sub">Auto-triggers UI alert</span>
+              </div>
+            </div>
+
+            <!-- Interactive Simulation Grid -->
+            <div class="predictive-simulation-grid">
+              <div class="predictive-sliders-card">
+                <!-- Preset Scenarios -->
+                <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                  <span style="font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; font-weight: 600;">Scenario Presets:</span>
+                  <button type="button" class="preset-chip" id="presetRetentionStable">Stable Baseline</button>
+                  <button type="button" class="preset-chip" id="presetRetentionFatigue">Mid-Season Fatigue (-18%)</button>
+                  <button type="button" class="preset-chip" id="presetRetentionSpike" style="border-color: rgba(244,63,94,0.35); color: #fda4af;">Severe Churn Drop (-35%)</button>
+                </div>
+
+                <!-- Slider 1: Completion Rate Drop -->
+                <div class="slider-group">
+                  <div class="slider-label-row">
+                    <span>Simulated Completion Drop</span>
+                    <span class="slider-val-badge tabular-nums" id="alertCompletionDropVal">-0%</span>
+                  </div>
+                  <input type="range" class="range-slider" id="alertCompletionDrop" min="0" max="50" step="1" value="0" />
+                </div>
+
+                <!-- Slider 2: Average Session Fatigue -->
+                <div class="slider-group">
+                  <div class="slider-label-row">
+                    <span>Session Duration Fatigue</span>
+                    <span class="slider-val-badge tabular-nums" id="alertSessionFatigueVal">-0 mins</span>
+                  </div>
+                  <input type="range" class="range-slider" id="alertSessionFatigue" min="0" max="60" step="2" value="0" />
+                </div>
+
+                <!-- Slider 3: Weekend Engagement Decay -->
+                <div class="slider-group">
+                  <div class="slider-label-row">
+                    <span>Weekend Viewing Decay</span>
+                    <span class="slider-val-badge tabular-nums" id="alertWeekendDecayVal">-0%</span>
+                  </div>
+                  <input type="range" class="range-slider" id="alertWeekendDecay" min="0" max="45" step="1" value="0" />
+                </div>
+
+                <!-- Select Target Cohort -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Evaluation Cohort</span>
+                    <span class="form-unit">target segment</span>
+                  </label>
+                  <select id="alertCohortSelect" class="select-field">
+                    <option value="all" selected>All Audiences (1,200 Viewers)</option>
+                    <option value="casual">Casual & Regular Viewers (75.5%)</option>
+                    <option value="binge">Binge Enthusiasts (24.5%)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Real-time Predictive Feedback Banner -->
+              <div class="predictive-banner-box" id="predictiveBannerBox">
+                <div class="predictive-banner-header" id="predictiveBannerHeader">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="predictiveBannerIcon">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span id="predictiveBannerTitle">Retention Model Stable</span>
+                </div>
+                <p class="predictive-banner-desc" id="predictiveBannerDesc">
+                  Simulation parameters indicate healthy cohort stability. Viewing cadence and completion rates exceed the 80% platform retention threshold.
+                </p>
+                <div class="predictive-mitigation-box" id="predictiveMitigationBox">
+                  <span style="font-weight: 600; color: #fff; display: block; margin-bottom: 0.2rem;">Proactive AI Strategy:</span>
+                  <span id="predictiveMitigationText">Continue standard episodic release schedule. Viewer churn risk is well within nominal parameters.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Deep-Dive Analytics Charts -->
           <div class="insights-charts-grid">
             <div class="card">
