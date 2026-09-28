@@ -1,0 +1,17 @@
+{
+  "model_name": "WatchWise-Segmenter-LR",
+  "version": "1.0.0",
+  "features": [
+    "watch_time_hours",
+    "avg_session_mins",
+    "session_count",
+    "weekend_ratio",
+    "completion_rate"
+  ],
+  "classes": [
+    "Casual & Regular Viewers",
+    "Binge Enthusiasts"
+  ],
+  "accuracy": 0.964,
+  "sample_count": 2500
+}

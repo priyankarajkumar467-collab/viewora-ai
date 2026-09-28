@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WatchWise AI — OTT Audience Segmentation & Personalization Platform</title>
+  <meta name="description" content="AI-powered OTT analytics dashboard that analyzes viewer behavior, segments audiences, provides personalized recommendations, and allows what-if behavioral simulations." />
+  <meta property="og:title" content="WatchWise AI — OTT Audience Segmentation & Personalization Platform" />
+  <meta property="og:description" content="AI-powered OTT analytics dashboard for viewer behavioral segmentation, personalized recommendations, and what-if simulation." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- ======================================================================
+         FIXED LEFT SIDEBAR
+         ====================================================================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#overview" class="brand-lockup">
+          <div class="brand-icon-wrapper">
+            <!-- AI / Film Play Icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">WatchWise <span class="ai-tag">AI</span></span>
+            <span class="brand-sub">OTT Intelligence Platform</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Core Analytics</span>
+        <button class="nav-item active" data-view="overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Overview</span>
+        </button>
+
+        <button class="nav-item" data-view="segments">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Audience Segments</span>
+        </button>
+
+        <span class="nav-section-label" style="margin-top: 0.5rem;">AI Inference</span>
+        <button class="nav-item" data-view="analyzer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+          <span>Viewer Analyzer</span>
+        </button>
+
+        <button class="nav-item" data-view="recommendations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>Recommendations</span>
+        </button>
+
+        <span class="nav-section-label" style="margin-top: 0.5rem;">Strategy & Modeling</span>
+        <button class="nav-item" data-view="insights">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          <span>Audience Insights</span>
+        </button>
+
+        <button class="nav-item" data-view="simulator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"></line>
+            <line x1="4" y1="10" x2="4" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="3"></line>
+            <line x1="20" y1="21" x2="20" y2="16"></line>
+            <line x1="20" y1="12" x2="20" y2="3"></line>
+            <line x1="1" y1="14" x2="7" y2="14"></line>
+            <line x1="9" y1="8" x2="15" y2="8"></line>
+            <line x1="17" y1="16" x2="23" y2="16"></line>
+          </svg>
+          <span>What-If Simulator</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-pill-group">
+          <div class="status-badge">
+            <div class="status-indicator">
+              <span class="status-dot" id="sidebarStatusDot"></span>
+              <span id="sidebarModeText">Demo Mode</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--text-faint);">1,200 Viewers</span>
+          </div>
+        </div>
+
+        <button class="sidebar-action-btn" id="openSettingsBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Settings & Config</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ======================================================================
+         MAIN CONTENT WRAPPER
+         ====================================================================== -->
+    <div class="main-wrapper">
+      <!-- TOP HEADER -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Navigation">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="header-title-box">
+            <h1 class="page-title" id="pageTitle">Overview</h1>
+            <span class="page-breadcrumb" id="pageBreadcrumb">Platform / Overview</span>
+          </div>
+        </div>
+
+        <div class="header-center">
+          <div class="search-bar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              class="search-input" 
+              id="headerSearchInput" 
+              placeholder="Search by Viewer ID (e.g. VW-1042) or Genre (e.g. Thriller)..." 
+            />
+          </div>
+        </div>
+
+        <div class="header-right">
+          <span class="mode-pill" id="modeBadge">🟢 Demo Mode</span>
+
+          <button class="header-icon-btn" title="System Notifications" onclick="alert('Notification: Weekend prime viewing surge detected (+24% streaming activity across Thriller & Sci-Fi).');">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge"></span>
+          </button>
+
+          <div class="user-profile" title="Signed in as OTT Operations Lead">
+            <div class="user-avatar">WW</div>
+            <div class="user-meta">
+              <span class="user-name">OTT Lead</span>
+              <span class="user-role">Administrator</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- VIEWPORT PAGES CONTAINER -->
+      <main class="content-area">
+        
+        <!-- ==================================================================
+             PAGE 1: OVERVIEW DASHBOARD
+             ================================================================== -->
+        <section class="page-view active" id="view-overview">
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <!-- KPI 1: Total Viewers -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Total Viewers</span>
+                <div class="kpi-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-number tabular-nums">1,200</span>
+                <span class="kpi-trend positive">+12.4%</span>
+              </div>
+              <p class="kpi-subtitle">Active accounts tracked this cycle</p>
+            </div>
+
+            <!-- KPI 2: Audience Segments -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Audience Segments</span>
+                <div class="kpi-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-number tabular-nums">2</span>
+                <span class="kpi-trend neutral">Primary Cohorts</span>
+              </div>
+              <p class="kpi-subtitle">Casual & Regular · Binge Enthusiasts</p>
+            </div>
+
+            <!-- KPI 3: Average Watch Time -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Average Watch Time</span>
+                <div class="kpi-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-number tabular-nums">23.7 hrs</span>
+                <span class="kpi-trend positive">+8.2%</span>
+              </div>
+              <p class="kpi-subtitle">Per viewer / 30-day tracking window</p>
+            </div>
+
+            <!-- KPI 4: Average Completion -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Average Completion</span>
+                <div class="kpi-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-number tabular-nums">68%</span>
+                <span class="kpi-trend positive">+5.7%</span>
+              </div>
+              <p class="kpi-subtitle">Titles watched to closing credits</p>
+            </div>
+          </div>
+
+          <!-- Dynamic AI Insight Panel -->
+          <div class="ai-insight-panel">
+            <div class="ai-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <div class="ai-insight-body">
+              <div class="ai-insight-header">
+                <span class="ai-insight-title">AI Cohort Intelligence</span>
+                <span class="ai-insight-meta">· Grounded on 1,200 behavioral logs</span>
+              </div>
+              <p class="ai-insight-text">
+                Viewer engagement is strongest during evening hours (8 PM – 11 PM), while Binge Enthusiasts contribute disproportionately to total watch time (61.4% of total streaming volume despite representing 24.5% of accounts). Recommendations prioritized on serialized Thriller content yield +18.4% higher completion retention.
+              </p>
+            </div>
+          </div>
+
+          <!-- Charts Row 1: Donut & Line -->
+          <div class="charts-grid-two">
+            <!-- Donut Chart Card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h2 class="card-title">Viewer Segment Distribution</h2>
+                  <span class="card-subtitle">Breakdown of the 1,200 active viewer accounts</span>
+                </div>
+              </div>
+              <div class="chart-box">
+                <canvas id="segmentDonutChart"></canvas>
+              </div>
+              <div class="donut-legend">
+                <div class="donut-legend-item">
+                  <div class="donut-legend-left">
+                    <span class="legend-color-dot casual"></span>
+                    <span style="font-weight: 600; color: #fff;">Casual & Regular Viewers</span>
+                  </div>
+                  <div class="donut-legend-meta tabular-nums">
+                    <span>906 viewers</span>
+                    <span style="color: var(--accent-cyan); font-weight: 700;">75.5%</span>
+                  </div>
+                </div>
+
+                <div class="donut-legend-item">
+                  <div class="donut-legend-left">
+                    <span class="legend-color-dot binge"></span>
+                    <span style="font-weight: 600; color: #fff;">Binge Enthusiasts</span>
+                  </div>
+                  <div class="donut-legend-meta tabular-nums">
+                    <span>294 viewers</span>
+                    <span style="color: #c084fc; font-weight: 700;">24.5%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Line Chart Card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h2 class="card-title">Watch Time Trend</h2>
+                  <span class="card-subtitle">Weekly average streaming hours per viewer cohort</span>
+                </div>
+              </div>
+              <div class="chart-box">
+                <canvas id="watchTimeTrendChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row 2: Genre Engagement -->
+          <div class="card full-width-chart-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Genre Engagement</h2>
+                <span class="card-subtitle">Distribution of primary content preferences across Action, Drama, Comedy, Thriller, Sci-Fi, and Romance</span>
+              </div>
+            </div>
+            <div class="chart-box" style="height: 250px;">
+              <canvas id="genreBarChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PAGE 2: AUDIENCE SEGMENTS
+             ================================================================== -->
+        <section class="page-view" id="view-segments">
+          <!-- Segment Profile Cards -->
+          <div class="segments-cards-grid">
+            <!-- Segment 1: Casual & Regular -->
+            <div class="segment-card casual">
+              <div class="segment-card-header">
+                <div>
+                  <h3 class="segment-title">Casual & Regular Viewers</h3>
+                  <p class="segment-subtitle">Primary subscriber base with steady episodic viewing habits</p>
+                </div>
+                <div class="segment-share-badge">
+                  <span class="segment-share-percent tabular-nums">75.5%</span>
+                  <span class="segment-share-label">906 Viewers</span>
+                </div>
+              </div>
+
+              <div class="segment-metrics-row">
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Avg Watch Time</span>
+                  <span class="seg-metric-value tabular-nums">16.5 hrs</span>
+                </div>
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Avg Session</span>
+                  <span class="seg-metric-value tabular-nums">38 mins</span>
+                </div>
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Completion</span>
+                  <span class="seg-metric-value tabular-nums">61%</span>
+                </div>
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Weekend Ratio</span>
+                  <span class="seg-metric-value tabular-nums">34%</span>
+                </div>
+              </div>
+
+              <h4 class="characteristics-title">Behavioral Characteristics</h4>
+              <ul class="characteristics-list">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Moderate cumulative watch time (10–25 hrs / month)</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Regular episodic sessions (typically 1–2 episodes per sitting)</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Medium completion rate with balanced content browsing</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Mostly weekday evening viewing (66% weekday distribution)</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Segment 2: Binge Enthusiasts -->
+            <div class="segment-card binge">
+              <div class="segment-card-header">
+                <div>
+                  <h3 class="segment-title">Binge Enthusiasts</h3>
+                  <p class="segment-subtitle">High-engagement power users driving platform retention & session depth</p>
+                </div>
+                <div class="segment-share-badge">
+                  <span class="segment-share-percent tabular-nums" style="color: #c084fc;">24.5%</span>
+                  <span class="segment-share-label">294 Viewers</span>
+                </div>
+              </div>
+
+              <div class="segment-metrics-row">
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Avg Watch Time</span>
+                  <span class="seg-metric-value tabular-nums">46.2 hrs</span>
+                </div>
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Avg Session</span>
+                  <span class="seg-metric-value tabular-nums">98 mins</span>
+                </div>
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Completion</span>
+                  <span class="seg-metric-value tabular-nums">86%</span>
+                </div>
+                <div class="seg-metric-item">
+                  <span class="seg-metric-label">Weekend Ratio</span>
+                  <span class="seg-metric-value tabular-nums">73%</span>
+                </div>
+              </div>
+
+              <h4 class="characteristics-title">Behavioral Characteristics</h4>
+              <ul class="characteristics-list">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>High watch time exceeding 36 hrs/month (up to 75 hrs)</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Extended continuous sessions averaging over 90 minutes</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>High completion rate (86% average; finishing entire seasons)</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Strong weekend viewing concentration (73% Friday–Sunday)</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Comparison Section: Radar Chart & Metrics Table -->
+          <div class="comparison-section">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3 class="card-title">Behavioral Comparison Profile</h3>
+                  <span class="card-subtitle">Multi-dimensional feature comparison between both cohorts</span>
+                </div>
+              </div>
+              <div class="chart-box" style="height: 310px;">
+                <canvas id="segmentRadarChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3 class="card-title">Cohort Benchmark Matrix</h3>
+                  <span class="card-subtitle">Direct statistical comparison</span>
+                </div>
+              </div>
+              <div class="comparison-table-wrapper">
+                <table class="clean-table">
+                  <thead>
+                    <tr>
+                      <th>Metric</th>
+                      <th>Casual & Regular</th>
+                      <th>Binge Enthusiasts</th>
+                      <th>Variance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="highlight">Total Viewers</td>
+                      <td class="tabular-nums">906 (75.5%)</td>
+                      <td class="tabular-nums">294 (24.5%)</td>
+                      <td class="tabular-nums" style="color: var(--accent-cyan);">3.1x Base</td>
+                    </tr>
+                    <tr>
+                      <td class="highlight">Average Watch Time</td>
+                      <td class="tabular-nums">16.5 hrs</td>
+                      <td class="tabular-nums">46.2 hrs</td>
+                      <td class="tabular-nums" style="color: #c084fc;">+180%</td>
+                    </tr>
+                    <tr>
+                      <td class="highlight">Average Session Duration</td>
+                      <td class="tabular-nums">38 mins</td>
+                      <td class="tabular-nums">98 mins</td>
+                      <td class="tabular-nums" style="color: #c084fc;">+157%</td>
+                    </tr>
+                    <tr>
+                      <td class="highlight">Completion Rate</td>
+                      <td class="tabular-nums">61%</td>
+                      <td class="tabular-nums">86%</td>
+                      <td class="tabular-nums" style="color: #10b981;">+41%</td>
+                    </tr>
+                    <tr>
+                      <td class="highlight">Weekend Viewing Ratio</td>
+                      <td class="tabular-nums">34%</td>
+                      <td class="tabular-nums">73%</td>
+                      <td class="tabular-nums" style="color: #c084fc;">+114%</td>
+                    </tr>
+                    <tr>
+                      <td class="highlight">Churn Risk Factor</td>
+                      <td class="tabular-nums" style="color: #f59e0b;">Moderate</td>
+                      <td class="tabular-nums" style="color: #10b981;">Low</td>
+                      <td class="tabular-nums">Content Dependent</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PAGE 3: VIEWER ANALYZER
+             ================================================================== -->
+        <section class="page-view" id="view-analyzer">
+          <div class="analyzer-grid">
+            <!-- Form Card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h2 class="card-title">Viewer Behavior Inputs</h2>
+                  <span class="card-subtitle">Input telemetry metrics to predict audience segment and generate recommendations</span>
+                </div>
+              </div>
+
+              <!-- Quick Presets -->
+              <div style="margin-bottom: 1.15rem;">
+                <span style="font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.45rem;">Quick Profile Presets:</span>
+                <div class="presets-group">
+                  <button type="button" class="preset-chip" id="presetCasual">Casual Viewer</button>
+                  <button type="button" class="preset-chip" id="presetBinge">Binge Enthusiast</button>
+                  <button type="button" class="preset-chip" id="presetBorderline">Borderline Case</button>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <!-- Input 1: Watch Time -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Watch Time</span>
+                    <span class="form-unit">hours (0–100)</span>
+                  </label>
+                  <input type="number" id="analyzerWatchTime" class="input-field tabular-nums" value="48.5" min="0" max="150" step="0.5" />
+                </div>
+
+                <!-- Input 2: Average Session -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Average Session</span>
+                    <span class="form-unit">minutes (10–240)</span>
+                  </label>
+                  <input type="number" id="analyzerAvgSession" class="input-field tabular-nums" value="95" min="5" max="300" />
+                </div>
+
+                <!-- Input 3: Session Count -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Session Count</span>
+                    <span class="form-unit">discrete sessions</span>
+                  </label>
+                  <input type="number" id="analyzerSessionCount" class="input-field tabular-nums" value="38" min="1" max="100" />
+                </div>
+
+                <!-- Input 4: Weekend Ratio -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Weekend Ratio</span>
+                    <span class="form-unit">% (0–100)</span>
+                  </label>
+                  <input type="number" id="analyzerWeekendRatio" class="input-field tabular-nums" value="72" min="0" max="100" />
+                </div>
+
+                <!-- Input 5: Completion Rate -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Completion Rate</span>
+                    <span class="form-unit">% (0–100)</span>
+                  </label>
+                  <input type="number" id="analyzerCompletionRate" class="input-field tabular-nums" value="88" min="0" max="100" />
+                </div>
+
+                <!-- Input 6: Top Genre -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Top Genre</span>
+                    <span class="form-unit">primary preference</span>
+                  </label>
+                  <select id="analyzerTopGenre" class="select-field">
+                    <option value="Thriller" selected>Thriller</option>
+                    <option value="Sci-Fi">Sci-Fi</option>
+                    <option value="Action">Action</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Romance">Romance</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn-primary" id="analyzeViewerBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>Analyze Viewer</span>
+              </button>
+            </div>
+
+            <!-- Analysis Results Card -->
+            <div class="card analyzer-results-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h2 class="card-title">Inference Results</h2>
+                  <span class="card-subtitle">Predicted segment, model confidence, and behavioral explanation</span>
+                </div>
+              </div>
+
+              <!-- Initial Placeholder -->
+              <div class="results-placeholder" id="analyzerPlaceholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 0.35rem;">Awaiting Analysis</h3>
+                <p style="font-size: 0.8rem; max-width: 320px;">
+                  Configure viewer parameters on the left and click <strong>Analyze Viewer</strong> to run real-time inference.
+                </p>
+              </div>
+
+              <!-- Loading State -->
+              <div class="loading-state" id="analyzerLoading">
+                <div class="spinner"></div>
+                <h3 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.25rem;">Processing Behavioral Vector...</h3>
+                <p style="font-size: 0.78rem; color: var(--text-faint);">Evaluating weights via trained segmentation pipeline</p>
+              </div>
+
+              <!-- Active Results Content -->
+              <div class="analysis-content" id="analyzerResults">
+                <div class="segment-verdict-box">
+                  <div class="verdict-header">
+                    <span class="verdict-label">Predicted Segment</span>
+                    <div class="confidence-meter">
+                      <span style="color: var(--text-faint); font-weight: 500;">Confidence:</span>
+                      <span id="verdictConfidence" class="tabular-nums" style="color: var(--accent-cyan);">92%</span>
+                    </div>
+                  </div>
+
+                  <h3 class="verdict-segment-name binge-theme" id="verdictSegmentName">Binge Enthusiasts</h3>
+
+                  <div class="confidence-bar-track">
+                    <div class="confidence-bar-fill" id="confidenceBarFill" style="width: 92%;"></div>
+                  </div>
+
+                  <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.35rem; font-weight: 600;">Behavioral Explanation:</div>
+                  <p class="verdict-reason" id="verdictReason">
+                    High watch time, long sessions and high completion rate indicate binge-oriented behavior.
+                  </p>
+                </div>
+
+                <h3 style="font-size: 0.85rem; font-weight: 600; color: #fff; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                  <span>Generated Personalized Titles for this Profile</span>
+                </h3>
+
+                <div id="analyzerRecsList" style="display: flex; flex-direction: column; gap: 0.65rem;">
+                  <!-- Injected via JavaScript -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PAGE 4: RECOMMENDATIONS
+             ================================================================== -->
+        <section class="page-view" id="view-recommendations">
+          <div class="recommendations-header">
+            <div>
+              <h2 style="font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: -0.01em;">Recommended For You</h2>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Personalized catalog matching viewer segments and behavioral propensities</p>
+            </div>
+
+            <!-- Genre Filter Tabs -->
+            <div class="genre-filter-tabs">
+              <button class="filter-tab-btn active" data-genre="all">All</button>
+              <button class="filter-tab-btn" data-genre="action">Action</button>
+              <button class="filter-tab-btn" data-genre="drama">Drama</button>
+              <button class="filter-tab-btn" data-genre="comedy">Comedy</button>
+              <button class="filter-tab-btn" data-genre="thriller">Thriller</button>
+              <button class="filter-tab-btn" data-genre="sci-fi">Sci-Fi</button>
+              <button class="filter-tab-btn" data-genre="romance">Romance</button>
+            </div>
+          </div>
+
+          <!-- Catalog Grid -->
+          <div class="catalog-grid" id="recommendationsGrid">
+            <!-- Dynamically populated by script.js -->
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PAGE 5: AUDIENCE INSIGHTS
+             ================================================================== -->
+        <section class="page-view" id="view-insights">
+          <!-- 4 Insights Analytics KPI Cards -->
+          <div class="insights-stats-grid">
+            <div class="insight-metric-card">
+              <span class="insight-metric-label">Peak Viewing Time</span>
+              <span class="insight-metric-val tabular-nums" style="color: var(--accent-cyan);">8 PM – 11 PM</span>
+              <span class="insight-metric-desc">Concentrates 46% of total daily streaming hours</span>
+            </div>
+
+            <div class="insight-metric-card">
+              <span class="insight-metric-label">Most Engaged Genre</span>
+              <span class="insight-metric-val" style="color: #c084fc;">Thriller</span>
+              <span class="insight-metric-desc">84% completion rate across serialized seasons</span>
+            </div>
+
+            <div class="insight-metric-card">
+              <span class="insight-metric-label">Highest Completion Segment</span>
+              <span class="insight-metric-val" style="color: #34d399;">Binge Enthusiasts</span>
+              <span class="insight-metric-desc">86% mean completion with 98 min session duration</span>
+            </div>
+
+            <div class="insight-metric-card">
+              <span class="insight-metric-label">Weekend Engagement</span>
+              <span class="insight-metric-val tabular-nums" style="color: #38bdf8;">74%</span>
+              <span class="insight-metric-desc">Platform viewership surges from Friday 6 PM to Sunday midnight</span>
+            </div>
+          </div>
+
+          <!-- AI Strategic Insight -->
+          <div class="ai-insight-panel">
+            <div class="ai-icon-badge" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <div class="ai-insight-body">
+              <div class="ai-insight-header">
+                <span class="ai-insight-title" style="color: #34d399;">Audience Retention Strategy</span>
+                <span class="ai-insight-meta">· Operational Recommendation</span>
+              </div>
+              <p class="ai-insight-text">
+                Binge Enthusiasts exhibit an exponential retention curve: viewers who complete 3 consecutive episodes of a Thriller or Sci-Fi series within 48 hours show a 94% probability of 90-day subscription renewal. For Casual Viewers, mid-week push notifications featuring 45-minute episodic dramas reduce 30-day drop-off by 22%.
+              </p>
+            </div>
+          </div>
+
+          <!-- Deep-Dive Analytics Charts -->
+          <div class="insights-charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3 class="card-title">Weekend vs Weekday Viewing Dynamics</h3>
+                  <span class="card-subtitle">Audience share across dayparts</span>
+                </div>
+              </div>
+              <div class="chart-box">
+                <canvas id="viewingTimingChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3 class="card-title">Completion Rate Distribution</h3>
+                  <span class="card-subtitle">Viewer volume grouped by percentage of completed content</span>
+                </div>
+              </div>
+              <div class="chart-box">
+                <canvas id="completionDistributionChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PAGE 6: WHAT-IF AUDIENCE SIMULATOR
+             ================================================================== -->
+        <section class="page-view" id="view-simulator">
+          <div style="margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: -0.01em;">What-If Audience Simulator</h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 800px;">
+              Allow the user to change viewer behavior and observe how the predicted audience segment changes in real time. Simulate platform shifts, marketing campaigns, or content duration adjustments.
+            </p>
+          </div>
+
+          <div class="simulator-layout">
+            <!-- Controls Card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3 class="card-title">Behavioral Parameter Controls</h3>
+                  <span class="card-subtitle">Adjust sliders to simulate behavioral transition scenarios</span>
+                </div>
+              </div>
+
+              <!-- Slider 1: Watch Time -->
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span>Watch Time (Monthly)</span>
+                  <span class="slider-val-badge tabular-nums" id="simWatchTimeVal">45.0 hrs</span>
+                </div>
+                <input type="range" class="range-slider" id="simWatchTime" min="5" max="80" step="0.5" value="45.0" />
+              </div>
+
+              <!-- Slider 2: Average Session Duration -->
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span>Average Session Duration</span>
+                  <span class="slider-val-badge tabular-nums" id="simSessionMinsVal">95 mins</span>
+                </div>
+                <input type="range" class="range-slider" id="simSessionMins" min="15" max="180" step="1" value="95" />
+              </div>
+
+              <!-- Slider 3: Session Count -->
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span>Session Count</span>
+                  <span class="slider-val-badge tabular-nums" id="simSessionCountVal">38</span>
+                </div>
+                <input type="range" class="range-slider" id="simSessionCount" min="5" max="75" step="1" value="38" />
+              </div>
+
+              <!-- Slider 4: Weekend Ratio -->
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span>Weekend Ratio</span>
+                  <span class="slider-val-badge tabular-nums" id="simWeekendRatioVal">75%</span>
+                </div>
+                <input type="range" class="range-slider" id="simWeekendRatio" min="10" max="95" step="1" value="75" />
+              </div>
+
+              <!-- Slider 5: Completion Rate -->
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span>Completion Rate</span>
+                  <span class="slider-val-badge tabular-nums" id="simCompletionVal">88%</span>
+                </div>
+                <input type="range" class="range-slider" id="simCompletion" min="30" max="98" step="1" value="88" />
+              </div>
+
+              <!-- Select: Top Genre -->
+              <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">
+                  <span>Top Content Genre</span>
+                </label>
+                <select id="simGenre" class="select-field">
+                  <option value="Thriller" selected>Thriller</option>
+                  <option value="Sci-Fi">Sci-Fi</option>
+                  <option value="Action">Action</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Romance">Romance</option>
+                </select>
+              </div>
+
+              <button class="btn-primary" id="runSimulationBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Run Simulation</span>
+              </button>
+            </div>
+
+            <!-- Simulation Results Card -->
+            <div class="card simulator-comparison-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3 class="card-title">Cohort Shift Projection</h3>
+                  <span class="card-subtitle">Real-time before-and-after segmentation classification</span>
+                </div>
+              </div>
+
+              <!-- Shift Nodes Visualizer -->
+              <div class="shift-visualizer">
+                <div class="shift-node">
+                  <span class="shift-node-label">Baseline State</span>
+                  <div class="shift-badge casual" id="simCurrentSegmentBadge">
+                    Casual & Regular Viewers
+                  </div>
+                </div>
+
+                <div class="shift-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </div>
+
+                <div class="shift-node">
+                  <span class="shift-node-label">Simulated Projection</span>
+                  <div class="shift-badge binge" id="simPredictedSegmentBadge">
+                    Binge Enthusiasts
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--border-subtle);">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Model Confidence:</span>
+                <span class="tabular-nums" style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan);" id="simConfidence">92%</span>
+              </div>
+
+              <!-- Change Explanation -->
+              <div class="simulation-reason-box">
+                <span class="sim-reason-title">Change Explanation</span>
+                <p class="sim-reason-text" id="simReasonText">
+                  Increasing watch time (45.0 hrs) and completion rate (88%) pushed the viewer behavior toward binge-oriented patterns. Weekend viewing (75%) crossed the threshold for serialized engagement.
+                </p>
+              </div>
+
+              <!-- Visual Comparison Chart -->
+              <div>
+                <h4 style="font-size: 0.8rem; font-weight: 600; color: var(--text-faint); text-transform: uppercase; margin-bottom: 0.5rem;">Behavioral Signature Comparison</h4>
+                <div class="chart-box" style="height: 220px;">
+                  <canvas id="simulatorRadarChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       SETTINGS & CONFIGURATION MODAL
+       ====================================================================== -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">WatchWise AI Configuration</h3>
+        <button class="modal-close-btn" id="closeSettingsBtn" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-title">FastAPI Backend URL</span>
+            <span class="setting-desc">Local or remote endpoint for the Python ML microservice</span>
+          </div>
+        </div>
+        <input type="text" class="input-field" id="apiUrlInput" value="http://localhost:8000" style="margin-top: -0.5rem;" />
+
+        <div class="setting-row" style="padding-top: 0.75rem; border-top: 1px solid var(--border-subtle);">
+          <div class="setting-info">
+            <span class="setting-title">Auto-Fallback Demo Mode</span>
+            <span class="setting-desc">Automatically use client-side mock ML data when backend is offline</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="demoModeToggle" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row" style="padding-top: 0.75rem; border-top: 1px solid var(--border-subtle);">
+          <div class="setting-info">
+            <span class="setting-title">Simulated Audience Size</span>
+            <span class="setting-desc">Currently loaded in browser memory</span>
+          </div>
+          <span class="tabular-nums" style="font-weight: 700; color: #fff;">1,200 Viewers</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" id="saveSettingsBtn">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Data & Application Logic Scripts -->
+  <script src="./data.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
